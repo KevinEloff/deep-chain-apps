@@ -1,0 +1,6 @@
+{
+"tasks": ["cdr prediction", "LSTM", "convolution"],
+"libraries": ["torch"],
+"embeddings": [],
+"datasets": []
+}

@@ -1,0 +1,6 @@
+{
+"tasks": ["binding energy", "LSTM", "convolution"],
+"libraries": ["torch"],
+"embeddings": [],
+"datasets": []
+}

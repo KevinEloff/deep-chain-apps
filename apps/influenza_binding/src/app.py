@@ -51,7 +51,7 @@ class App(DeepChainApp):
         """
         Return a list of app score names
         """
-        return ["binding energy"]
+        return ["binding_energy"]
 
     def compute_scores(self, sequences: List[str]) -> ScoreList:
         """Return a list of all proteins scores

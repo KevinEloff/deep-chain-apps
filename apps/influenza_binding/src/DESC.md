@@ -1,9 +1,9 @@
 # Description
-This app is designed to estimate how effectively an antibody binds to the influenza virus receptor binding domain. Given an antibody protein, the app predicts the binding energy to the Influenza HA protein as seen below. This app uses a simplified version of the model used in the [Zindi UmojaHack DeepChain Antibody Classification Challenge](https://zindi.africa/hackathons/umojahack-africa-2021-1-instadeep-challenge-advanced). Please see the competition page for more details.
+This app is designed to estimate how effectively an antibody binds to the influenza virus receptor binding domain. Given an antibody protein, the app predicts the binding energy to the Influenza Hemagglutinin (HA) protein as seen below. This app uses a simplified version of the model used in the [Zindi UmojaHack DeepChain Antibody Classification Challenge](https://zindi.africa/hackathons/umojahack-africa-2021-1-instadeep-challenge-advanced). Please see the competition page for more details.
 
 ![alt text](https://raw.githubusercontent.com/KevinEloff/deep-chain-apps/main/apps/pytorch_app/docs/influenza-infection2.png)
 
-The CDR regions are useful when determining the binding energy of an antibody protein to an influenza protein. The goal of this app is to help the user determine the location of these regions. This model could also be used in combination with other models, such as a binding energy predictor, by extracting the CDR regions directly as features. These features could then be embedded with [bio-transformers](https://pypi.org/project/bio-transformers/) such as ProtBert, allowing for a very simple and robust model to predict the final binding energy trained on CDR region embeddings.
+The CDR regions are useful when determining the binding energy of an antibody protein to an influenza protein. The goal of this app is to predict the location of these CDR regions and then use them with ProtBert embeddings to create a simple, yet accurate, model that predicts the binding energy of antibody proteins.
 
 
 ## The Data
@@ -14,17 +14,32 @@ The dataset consists of antibody 40184 proteins, each consisting of 221 amino ac
 
 ## The Model
 
-![alt text](https://raw.githubusercontent.com/KevinEloff/deep-chain-apps/main/apps/cdr_predictor/docs/model.png)
+![alt text](https://raw.githubusercontent.com/KevinEloff/deep-chain-apps/main/apps/influenza_binding/docs/cdr_binding_prediction_720.png)
 
-We do not use any pre-trained embeddings for our scorer. Rather, we embed each individual amino acid. These embeddings are passed through a bi-directional LSTM block and a 1D convolution block. The output of both blocks is passed through a feed forward network to arrive at the final prediction for the three CDR regions.
+Normally, the CDR locations are unknown for a varying length antibody sequence. We therefore use our CDRPredictorApp to predict the location of the three CDR regions, which we then embed using ProtBert from the [bio-transformers](https://pypi.org/project/bio-transformers/) package. These embeddings are finally used in a simple three-layer MLP to predict the binding energy of the antibody. The architecture of the binding energy MLP is given below:
+
+```Python
+Model(
+  (linear_cdr): Sequential(
+    (0): Linear(in_features=3072, out_features=512, bias=True)
+    (1): ReLU()
+    (2): Dropout(p=0.1, inplace=False)
+    (3): Linear(in_features=512, out_features=256, bias=True)
+    (4): ReLU()
+    (5): Dropout(p=0.1, inplace=False)
+  )
+  (out_linear): Linear(in_features=256, out_features=1, bias=True)
+)
+```
+
+To extract the CDR region embeddings, we first process the entire amino acid sequence through ProtBert which returns a full list of embeddings. We then index these embeddings at each of the three predicted CDR regions. The mean embedding of each location then becomes the embedding for that CDR region. Please see the CDRPredictorApp on the [DeepChain Hub](https://app.deepchain.bio/hub/apps) or [GitHub](https://github.com/KevinEloff/deep-chain-apps/tree/main/apps/cdr_predictor) for more detail on predicting the locations of the three CDR regions.
 
 ## Results
-We measure the accuracy of the model in terms of Root Mean Square Error (RMSE). The error is calculated between the predicted integer index location of each CDR region and the actual location for each of the three regions. The overall RMSE for the scalar prediction during training is 0.000293.
+We measure the accuracy of the model in terms of Root Mean Square Error (RMSE). The error is calculated between the predicted binding energy and the actual binding energy on our validation and test sets.
 
 **RMSE**:
-- CDR1: 0.5376026
-- CDR2: 0.5678551
-- CDR3: 1.0083260
+- valid: 2.587984 
+- test: 2.622088
 
 ## Example Usage 
 The app itself takes in a sequence of antibody proteins as input and returns three float scalars for each protein. For example, if we input a sequence:
@@ -41,30 +56,26 @@ sequences = [
 app = App("cuda:0")
 scores = app.compute_scores(sequences)
 ```
-The app will return a set of three scalars for each input protein:
+The app will return a set of binding energies for each input protein:
 
 ```python
 > scores
 [
   {
-    'CDR1_position': 0.15440723299980164, 
-    'CDR2_position': 0.32853004336357117, 
-    'CDR3_position': 0.5693634152412415
+    'binding_energy': -11.36922,
   }, 
   {
-    'CDR1_position': 0.11785992980003357, 
-    'CDR2_position': 0.20338580012321472, 
-    'CDR3_position': 0.4263269305229187
+    'binding_energy': -14.23689,
   }
 ]
 ```
 
-These scalars each represent how far along the amino acid sequence the center of the CDR region is. To convert these back into a sequence index, we multiply by the original sequence length and round the result.
+These values represent the predicted binding energies of the input antibody proteins to the influenza HA protein.
 
-See the source code [here](https://github.com/KevinEloff/deep-chain-apps/tree/main/apps/cdr_predictor).
+See the source code [here](https://github.com/KevinEloff/deep-chain-apps/tree/main/apps/influenza_binding).
 # Author
 
-**Kevin Michael Eloff**  
+**Kevin Eloff**  
 Research Engineer Intern @ InstaDeep   
 MEng @ Stellenbosch University  
 20801769@sun.ac.za  
@@ -77,14 +88,13 @@ MEng @ Stellenbosch University
 
 ## Tasks
 
-- cdr prediction
+- binding energy
 - regressor
-- LSTM
-- CNN
+- MLP
 
 ## Embeddings
 
-- none
+- ProtBert (mean)
 
 ## Datasets
 

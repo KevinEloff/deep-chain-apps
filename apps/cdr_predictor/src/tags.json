@@ -1,6 +1,6 @@
 {
-"tasks": ["cdr prediction", "LSTM", "convolution"],
+"tasks": ["cdr prediction", "LSTM", "CNN"],
 "libraries": ["torch"],
 "embeddings": [],
-"datasets": []
+"datasets": ["antibodybinding"]
 }

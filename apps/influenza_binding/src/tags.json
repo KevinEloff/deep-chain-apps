@@ -1,5 +1,5 @@
 {
-"tasks": ["binding energy", "regressor"],
+"tasks": ["binding energy", "regressor", "MLP"],
 "libraries": ["torch"],
 "embeddings": ["protbert"],
 "datasets": ["antibodybinding"]

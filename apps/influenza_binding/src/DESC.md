@@ -1,5 +1,5 @@
-# Description
-This app is designed to estimate how effectively an antibody binds to the influenza virus receptor binding domain. Given an antibody protein, the app predicts the binding energy to the Influenza Hemagglutinin (HA) protein as seen below. This app uses a simplified version of the model used in the [Zindi UmojaHack DeepChain Antibody Classification Challenge](https://zindi.africa/hackathons/umojahack-africa-2021-1-instadeep-challenge-advanced). Please see the competition page for more details.
+# CDR Influenza Binding App
+This app is designed to estimate how effectively an antibody binds to the influenza virus receptor binding domain. Given an antibody protein, the app predicts the binding energy to the Influenza Hemagglutinin (HA) protein as seen below. This app focuses on the complementarity-determining regions (CDRs) of the antibody protein. The app uses a simplified version of the model used in the [Zindi UmojaHack DeepChain Antibody Classification Challenge](https://zindi.africa/hackathons/umojahack-africa-2021-1-instadeep-challenge-advanced). Please see the competition page for more details.
 
 ![alt text](https://raw.githubusercontent.com/KevinEloff/deep-chain-apps/main/apps/pytorch_app/docs/influenza-infection2.png)
 
@@ -8,7 +8,7 @@ The CDR regions are useful when determining the binding energy of an antibody pr
 
 ## The Data
 
-The dataset consists of antibody 40184 proteins, each consisting of 221 amino acids. Three complementarity-determining regions (CDR) are also given along with their ProtBert embeddings. Each amino acid sequence is also labeled with a binding energy score. For the purposes of our app, we will only use the embeddings of the three CDR regions (3x1024) and the binding energy labels. The dataset is available for download on the [Zindi competition page](https://zindi.africa/hackathons/umojahack-africa-2021-1-instadeep-challenge-advanced/data), or from the [bio-datasets](https://pypi.org/project/bio-datasets/) package as "antibodybinding".
+The dataset consists of antibody 40184 proteins, each consisting of 221 amino acids. Three CDR regions are also given along with their ProtBert embeddings. Each amino acid sequence is also labeled with a binding energy score. For the purposes of our app, we will only use the embeddings of the three CDR regions (3x1024) and the binding energy labels. The dataset is available for download on the [Zindi competition page](https://zindi.africa/hackathons/umojahack-africa-2021-1-instadeep-challenge-advanced/data), or from the [bio-datasets](https://pypi.org/project/bio-datasets/) package as "antibodybinding".
 
 
 
@@ -42,16 +42,18 @@ We measure the accuracy of the model in terms of Root Mean Square Error (RMSE). 
 - test: 2.622088
 
 ## Example Usage 
-The app itself takes in a sequence of antibody proteins as input and returns three float scalars for each protein. For example, if we input a sequence:
+The app itself takes in a sequence of antibody proteins as input and returns scalar float score for each protein. For example, if we input a sequence:
 
 ```python
 sequences = [
-  "QLKESGPGLVAPSQSLHITCTVSGFNLASNGVHWVRQPPGSGLEWLGVIWAGGNTNYNSALMSNVSIS
-  KDNSKSQVFLKMKSLQTDDTAMYYCARDFYDTDVGYYAMDYWGQGTSVVVSSAKTTPPSVYPLAPGSAA
-  FTNSMVTLPADPADPADPADKGYFPEPVTVTWNSGSLSSGVHTFPAVLQSDLYTLSSSVTVPSSTWPSE",
-  "CTVSGFLLCSNGVHWVRQPPGKGLEWDGVIWAGGLTNYNSALMSRVSISKDNSKSQVFLKMKSLQTDD
-  TALVYCARDFLDYDVGYYAMDYWGQGTSVTVSSAKTTPPYVDPLAPGSAAQTNSMVTLGCLVKGYFPEP
-  VTVTWNSGSLSSGVHTFPAVLQSDLYTLSSSVTVPSSTWPSETVTCNVAHPASST",
+  "QVQLKEHGPGLVNPSQSLSVTCSVSGFLLISNGVHWVRQPPGKGLEWLGVIWAGGNTNYNIALMSRVS
+  ISKDNSKSQVFLKCKSLQTDDTAMYCCARDFYDYDNFTYAMAYWGQGTSVTVSSAKTTPPSVYPLAPGS
+  AAQTNSMVTLGCLVKGYFPEPVTVTWNSGSLSSGVHTFPAVLQSDLYTLSSSVTVPSSTWPSETVTCNV
+  AHPASSTKVDKKIVP",
+  "YGPGLVAPSQSLSITCTVSGFLLISNGVHWVRQPPGKGLEWLGVIWAGGMTAYNSATMSRVSISKDNS
+  KSQVFLKMKSLQTDDTAMYYCARDFYCYDVFYYAMDYWGQGTSVTVSSAYTTPPSVYPLAPGSAAQTNS
+  MVTLGCLVKGYFPEPVTVTWNSGSLSSGVHTFPAVLQSDLYTLSSSVTVPSSTWPSETVTCNVAHPASS
+  TKV",
 ]
 app = App("cuda:0")
 scores = app.compute_scores(sequences)
@@ -62,10 +64,10 @@ The app will return a set of binding energies for each input protein:
 > scores
 [
   {
-    'binding_energy': -11.36922,
+    'binding_energy': -9.6949663,
   }, 
   {
-    'binding_energy': -14.23689,
+    'binding_energy': -10.2529935,
   }
 ]
 ```

@@ -1,6 +1,6 @@
 {
-"tasks": ["binding energy", "LSTM", "convolution"],
+"tasks": ["binding energy", "regressor", "LSTM", "CNN"],
 "libraries": ["torch"],
 "embeddings": [],
-"datasets": []
+"datasets": ["antibodybinding"]
 }

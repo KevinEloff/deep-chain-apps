@@ -1,4 +1,4 @@
-# Description
+# CDR Predictor App
 This app is designed to predict the location of the three complementarity determining regions (CDR) regions of an antibody. In particular, we consider an antibody that binds to the influenza virus receptor binding domain. Given an antibody protein, the app predicts the center of each CDR region along the protein as a scalar value from 0 to 1. This app uses the dataset provided in the [Zindi UmojaHack DeepChain Antibody Classification Challenge](https://zindi.africa/hackathons/umojahack-africa-2021-1-instadeep-challenge-advanced). Please see the competition page for more details.
 
 ![alt text](https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Complementarity_determining_regions.PNG/640px-Complementarity_determining_regions.PNG)
@@ -64,7 +64,7 @@ These scalars each represent how far along the amino acid sequence the center of
 See the source code [here](https://github.com/KevinEloff/deep-chain-apps/tree/main/apps/cdr_predictor).
 # Author
 
-**Kevin Michael Eloff**  
+**Kevin Eloff**  
 Research Engineer Intern @ InstaDeep   
 MEng @ Stellenbosch University  
 20801769@sun.ac.za  

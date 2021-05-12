@@ -5,18 +5,13 @@ By Matthew Baas and Kevin Eloff
 """
 
 
-from pathlib import Path
 from typing import Dict, List, Optional
 
-from deepchain.components import DeepChainApp, Transformers
-from tensorflow.keras.models import load_model
-import numpy as np
-
+from deepchain.components import DeepChainApp
+from torch import load, nn
 import torch
-import torch.nn as nn
 
-from os import path
-import urllib
+import numpy as np
 
 Score = Dict[str, float]
 ScoreList = List[Score]
@@ -45,7 +40,7 @@ class App(DeepChainApp):
         self.i2i_bigram = np.arange(len(self.i2s)**2).reshape((len(self.i2s), len(self.i2s))) 
 
         # Make sure to put your checkpoint file in your_app/checkpoint folder
-        self._checkpoint_filename: Optional[str] = "model.pth"
+        self._checkpoint_filename: Optional[str] = "model.pt"
 
         if self._checkpoint_filename is not None:
             self.model.load_state_dict(torch.load(self.get_checkpoint_path(__file__)))
@@ -55,7 +50,7 @@ class App(DeepChainApp):
         """
         Return a list of app score names
         """
-        return ["binding energy"]
+        return ["binding_energy"]
 
     def compute_scores(self, sequences: List[str]) -> ScoreList:
         """

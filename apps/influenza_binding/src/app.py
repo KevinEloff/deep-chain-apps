@@ -1,7 +1,7 @@
 """
 PyTorch implementaton of binding energy scorer
 The model scores the binding energy per position in the receptor binding domain of proteins.
-By Matthew Baas and Kevin Eloff
+By Kevin Eloff
 """
 
 from typing import Dict, List, Optional, Tuple
@@ -84,9 +84,9 @@ class App(DeepChainApp):
 
         for i in range(len(sequences)):
             emb = self.transformer.compute_embeddings(
-                sequences[i],
+                [sequences[i]],
                 pool_mode=["full"],
-            )["full"] 
+            )["full"][0]
 
             loc = np.floor(cdr_locations[i]).astype(int)
             
@@ -98,7 +98,7 @@ class App(DeepChainApp):
             torch.tensor(cdr1_emb, device=self._device), 
             torch.tensor(cdr2_emb, device=self._device), 
             torch.tensor(cdr3_emb, device=self._device)
-        ), dim=1)
+        ), dim=-1)
 
         with torch.no_grad():
             pred = self.energy_model(inp)
@@ -168,7 +168,7 @@ if __name__ == "__main__":
 
     sequences = [
         "QVQLKEHGPGLVNPSQSLSVTCSVSGFLLISNGVHWVRQPPGKGLEWLGVIWAGGNTNYNIALMSRVSISKDNSKSQVFLKCKSLQTDDTAMYCCARDFYDYDNFTYAMAYWGQGTSVTVSSAKTTPPSVYPLAPGSAAQTNSMVTLGCLVKGYFPEPVTVTWNSGSLSSGVHTFPAVLQSDLYTLSSSVTVPSSTWPSETVTCNVAHPASSTKVDKKIVP",
-        "KEYGPGLVAPSQSLSITCTVSGFLLISNGVHWVRQPPGKGLEWLGVIWAGGMTAYNSATMSRVSISKDNSKSQVFLKMKSLQTDDTAMYYCARDFYCYDVFYYAMDYWGQGTSVTVSSAYTTPPSVYPLAPGSAAQTNSMVTLGCLVKGYFPEPVTVTWNSGSLSSGVHTFPAVLQSDLYTLSSSVTVPSSTWPSETVTCNVAHPASSTKVDK",
+        "YGPGLVAPSQSLSITCTVSGFLLISNGVHWVRQPPGKGLEWLGVIWAGGMTAYNSATMSRVSISKDNSKSQVFLKMKSLQTDDTAMYYCARDFYCYDVFYYAMDYWGQGTSVTVSSAYTTPPSVYPLAPGSAAQTNSMVTLGCLVKGYFPEPVTVTWNSGSLSSGVHTFPAVLQSDLYTLSSSVTVPSSTWPSETVTCNVAHPASSTKV",
     ]
     app = App("cuda:0")
     scores = app.compute_scores(sequences)
